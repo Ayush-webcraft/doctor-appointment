@@ -5,4 +5,4 @@
 .env.local
 /api/.env
 package-lock.json
-yarn.lock
+yarn.lockyarn.lock
