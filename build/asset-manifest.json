@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.ebca50f7.css",
-    "main.js": "/static/js/main.ec1b6762.js",
+    "main.js": "/static/js/main.e1bce678.js",
     "static/media/baby.png": "/static/media/baby.928305bb3baf9a5ab172.png",
     "static/media/banner.jpg": "/static/media/banner.d7417439c41033f97b05.jpg",
     "static/media/doctor chair 2.jpg": "/static/media/doctor chair 2.fc978c794010fb342906.jpg",
@@ -24,10 +24,10 @@
     "static/media/blogIcon.png": "/static/media/blogIcon.c322f577cf7372c45a5f.png",
     "index.html": "/index.html",
     "main.ebca50f7.css.map": "/static/css/main.ebca50f7.css.map",
-    "main.ec1b6762.js.map": "/static/js/main.ec1b6762.js.map"
+    "main.e1bce678.js.map": "/static/js/main.e1bce678.js.map"
   },
   "entrypoints": [
     "static/css/main.ebca50f7.css",
-    "static/js/main.ec1b6762.js"
+    "static/js/main.e1bce678.js"
   ]
 }
