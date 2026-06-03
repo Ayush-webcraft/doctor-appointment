@@ -1,0 +1,71 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:        # lets you trigger a deploy manually from the Actions tab
+
+# If you push again while a deploy is still running, cancel the old one.
+concurrency:
+  group: frontend-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy Frontend to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build React Application
+        run: npm run build
+        env:
+          # CRA reads REACT_APP_* at build time.
+          # If you use Vite instead, rename this to VITE_API_BASE_URL
+          # (and change the build output dir below from build -> dist).
+          REACT_APP_API_BASE_URL: ${{ secrets.REACT_APP_API_BASE_URL }}
+          CI: false          # stops CRA from failing the build on lint warnings
+
+      # Step 1: copy the build to a staging folder in the EC2 user's home dir.
+      # rm: true wipes that folder first, so old files never linger.
+      - name: Copy build to EC2 (staging)
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT || 22 }}
+          source: "build/*"
+          target: "/home/${{ secrets.EC2_USERNAME }}/frontend-staging"
+          rm: true
+          strip_components: 1
+
+      # Step 2: move files into the web root (needs sudo) and reload Nginx.
+      - name: Publish & reload Nginx
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT || 22 }}
+          script: |
+            set -e
+            WEB_ROOT="${{ secrets.EC2_TARGET_DIR }}"
+            STAGING="/home/${{ secrets.EC2_USERNAME }}/frontend-staging"
+
+            sudo mkdir -p "$WEB_ROOT"
+            sudo rm -rf "${WEB_ROOT:?}/"*          # clear old site (guarded so it can't run on /)
+            sudo cp -r "$STAGING/"* "$WEB_ROOT/"   # publish new build
+            sudo systemctl reload nginx            # pick up the new files
