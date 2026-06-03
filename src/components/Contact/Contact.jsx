@@ -35,8 +35,8 @@ const Contact = () => {
 		{
 			icon: <FaPhoneAlt />,
 			title: 'Call us',
-			content: '+1 (555) 123-4567',
-			link: 'tel:+1 (555) 123-4567'
+			content: '7247203233',
+			link: 'tel:7247203233'
 		},
 		{
 			icon: <FaEnvelope />,
@@ -64,7 +64,7 @@ const Contact = () => {
 								<span className="contact-label">Get in touch</span>
 								<h2 className="contact-heading">Let's talk about your health</h2>
 								<p className="contact-text">
-									Have questions or need to schedule an appointment? We're here to help. 
+									Have questions or need to schedule an appointment? We're here to help.
 									Reach out to us through any of the following methods.
 								</p>
 
